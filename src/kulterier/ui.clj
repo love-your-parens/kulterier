@@ -149,16 +149,18 @@
         grouped (group-by (fn [[_ event]]
                             (.format (:date event)
                                      (java.time.format.DateTimeFormatter/ofPattern "Y/MM/dd")))
-                          (sort-by (comp :date second) events))]
+                          events)
+        groups-asc (sort (keys grouped))]
     [:table {:class ["m-auto" "-mt-2" "max-w-[95%]" "md:max-w-[1024px]"]}
      [:tbody
-      (for [[g e] grouped]
+      (for [g groups-asc :let [events (sort-by (comp :date second)
+                                           (get grouped g []))]]
         (into [:<>
                [:tr [:td {:class ["text-xl" "font-light" "text-left" "pt-1"]
                           :colspan colspan}
                      [:p {:class ["border-b border-dashed border-neutral-400 py-2"]}
                       (format "» %s" g)]]]]
-              (for [[i d] e]
+              (for [[i d] events]
                 (let [summary-row [(title-cell (:name d) (:url d) (:thumbnail d))
                                    [:td.text-left.md:p-2 (:place d)]
                                    [:td.md:text-center.md:p-2.font-semibold
@@ -179,7 +181,9 @@
   [events]
   [:table {:class ["mx-auto" "my-4" "max-w-[95%]" "md:max-w-[1024px]"]}
    [:tbody
-    (for [[i d] events]
+    (for [[i d] (sort-by (fn [[_ d]] (str
+                                      (if (empty? (:description d)) 1 0)
+                                      (:place d))) events)]
       (let [summary-row [(title-cell (:name d) (:url d) (:thumbnail d))
                          [:td.text-left.md:p-2 (:place d)]
                          [:td.text-right.md:p-2 (event-type-tag (:type d))]]
