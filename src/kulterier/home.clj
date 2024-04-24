@@ -27,12 +27,8 @@
     (ui/page
      ctx
      [:header.text-center.mb-6
-      (let [[tag params & rest] (ui/kulterier-logo)]
-        (into [tag (merge params
-                          {:width 160
-                           :height 160
-                           :class ["m-auto" "text-center"]})]
-              rest))
+      (ui/kulterier-logo :width 160 :height 160
+                         :class ["m-auto" "text-center"])
       [:div.inline-block
        [:h1 {:class ["text-5xl font-black"]} "Kulterier"]
        [:h2.text-2xl.font-light.lowercase "Na tropie kultury"]]]
@@ -41,8 +37,7 @@
                         :hx-target "this"
                         :hx-swap "innerHTML"}
       [:p.text-center.animate-bounce "Węszę..."]]
-     (ui/footer)
-     )))
+     (ui/footer))))
 
 (def module
   {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}
