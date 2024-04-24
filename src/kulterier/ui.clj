@@ -224,7 +224,9 @@
   (let [keyname (name key)]
     [:label.m-2 {:class ["font-bold" "cursor-pointer" "transition-all" "ease-in-out" "underline-offset-4"
                          "hover:scale-110" "hover:underline" "hover:mx-3" "has-[:checked]:underline"]}
-     [:input {:class ["mx-1" "text-slate-700" "focus:ring-slate-600" "border-gray-400"]
+     [:input {:class ["mx-1" "dark:px-100"
+                      "text-slate-700" "dark:text-slate-900" "focus:ring-slate-600"
+                      "border-gray-400" "dark:border-gray-900" "dark:bg-gray-300"]
               :type "radio" :name "category"
               :role "tab" :aria-controls "event-panel"
               :hx-get (str "/events/" keyname)
