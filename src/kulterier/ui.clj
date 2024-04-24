@@ -93,6 +93,8 @@
               :class ["inline" "min-w-[80px]" "w-[90px]" "max-h-[90px]"
                       "mr-2" "md:mr-4" "object-cover" "object-top"
                       "border-l-2" "pl-0.5" "border-slate-700"
+                      "transition-all"
+                      "hover:brightness-200"
                       "dark:border-slate-400"]}]])
     (if url (text-link title url) title)]))
 
