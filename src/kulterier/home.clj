@@ -41,7 +41,7 @@
 
 (def module
   {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}
-             ["/" {:get (home-page "/events/timetable")}]
+             ["/" {:get (home-page "/events/temporary")}]
              ["/permanent" {:get (home-page "/events/permanent")}]
              ["/temporary" {:get (home-page "/events/temporary")}]
              ["/timetable" {:get (home-page "/events/timetable")}]]
