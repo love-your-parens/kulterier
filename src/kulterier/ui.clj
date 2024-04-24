@@ -183,7 +183,7 @@
 
 (defn permanent-events-table
   [events]
-  [:table {:class ["mx-auto" "my-4" "max-w-[95%]" "md:max-w-[1024px]"]}
+  [:table {:class ["mx-auto" "my-5" "max-w-[95%]" "md:max-w-[1024px]"]}
    [:tbody
     (for [[i d] (sort-by (fn [[_ d]] (str
                                       (if (empty? (:description d)) 1 0)
@@ -203,7 +203,7 @@
 (defn temporary-events-table
   [events]
   (let [sorted-events (sort-by (comp second :date second) events)]
-    [:table {:class ["mx-auto" "my-4" "max-w-[95%]" "md:max-w-[1024px]"]}
+    [:table {:class ["mx-auto" "my-5" "max-w-[95%]" "md:max-w-[1024px]"]}
      [:tbody
       (for [[i d] sorted-events]
         (let [summary-row [(title-cell (:name d) (:url d) (:thumbnail d))
@@ -226,6 +226,7 @@
   [key label selected?]
   (let [keyname (name key)]
     [:label.m-2 {:class ["font-bold" "cursor-pointer" "transition-all" "ease-in-out" "underline-offset-4"
+                         "text-sm" "md:text-base"
                          "hover:scale-110" "hover:underline" "hover:mx-3" "has-[:checked]:underline"]}
      [:input {:class ["mx-1" "dark:px-100"
                       "text-slate-700" "dark:text-slate-900" "focus:ring-slate-600"
