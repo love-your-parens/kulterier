@@ -40,7 +40,9 @@
                         :hx-get content-uri
                         :hx-target "this"
                         :hx-swap "innerHTML"}
-      [:p.text-center "Węszę..."]])))
+      [:p.text-center.animate-bounce "Węszę..."]]
+     (ui/footer)
+     )))
 
 (def module
   {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}
