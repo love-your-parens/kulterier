@@ -92,12 +92,14 @@
               :alt title
               :class ["inline" "min-w-[80px]" "w-[90px]" "max-h-[90px]"
                       "mr-2" "md:mr-4" "object-cover" "object-top"
-                      "border-l-2" "pl-0.5" "border-black"]}]])
+                      "border-l-2" "pl-0.5" "border-slate-700"
+                      "dark:border-slate-400"]}]])
     (if url (text-link title url) title)]))
 
 (defn event-type-tag
   [event-type-key]
-  [:span.font-light.text-slate-600
+  [:span.font-light
+   {:class ["text-slate-600" "dark:text-slate-400"]}
    (str "#" (case event-type-key
               :museum "muzeum"
               :movie "kino"
