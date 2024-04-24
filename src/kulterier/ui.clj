@@ -489,3 +489,19 @@
        :class ["stroke-slate-950" "dark:stroke-slate-100"]}
       nil]]]))
 
+(defn footer []
+  [:footer.text-xs.m-auto.mt-20.text-center
+   [:div {:class ["inline-block" "align-middle" "border" "rounded-full"
+                  "border-slate-900" "dark:border-slate-100"
+                  "h-[66px]" "w-[66px]"  "overflow-hidden"
+                  "hover:animate-spin"]}
+    (kulterier-logo :height 60 :class ["m-auto"  "pl-1"])]
+   [:p {:class ["text-center" "m-auto" "ml-1" "my-2" "py-3" "px-3" "align-middle"
+                "border-t"  "border-b" "border-slate-900" "dark:border-slate-100"
+                "border-dotted" "inline-block"]}
+    "Treserem i opiekunem Kulteriera jest"
+    [:a.link.ml-1.whitespace-nowrap {:href "https://wator.it"
+                                     :target "_blank"}
+     "Konrad Wątor"]
+    "."]])
+
