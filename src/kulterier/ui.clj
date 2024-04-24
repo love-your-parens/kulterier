@@ -156,7 +156,7 @@
     [:table {:class ["m-auto" "-mt-2" "max-w-[95%]" "md:max-w-[1024px]"]}
      [:tbody
       (for [g groups-asc :let [events (sort-by (comp :date second)
-                                           (get grouped g []))]]
+                                               (get grouped g []))]]
         (into [:<>
                [:tr [:td {:class ["text-xl" "font-light" "text-left" "pt-1"]
                           :colspan colspan}
