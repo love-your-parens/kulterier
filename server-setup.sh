@@ -25,10 +25,10 @@ mv .trench_tmp/trench /usr/local/bin/
 rm -rf $TRENCH_FILE .trench_tmp
 
 # Non-root user
-useradd -m app
-mkdir -m 700 -p /home/app/.ssh
-cp /root/.ssh/authorized_keys /home/app/.ssh
-chown -R app:app /home/app/.ssh
+useradd -m kulterier-app
+mkdir -m 700 -p /home/kulterier-app/.ssh
+cp /root/.ssh/authorized_keys /home/kulterier-app/.ssh
+chown -R kulterier-app:kulterier-app /home/kulterier-app/.ssh
 
 # Git deploys - only used if you don't have rsync on your machine
 set_up_app () {
@@ -38,43 +38,43 @@ set_up_app () {
   git init --bare
   cat > hooks/post-receive << EOD
 #!/usr/bin/env bash
-git --work-tree=/home/app --git-dir=/home/app/repo.git checkout -f
+git --work-tree=/home/kulterier-app --git-dir=/home/kulterier-app/repo.git checkout -f
 EOD
   chmod +x hooks/post-receive
 }
-sudo -u app bash -c "$(declare -f set_up_app); set_up_app"
+sudo -u kulterier-app bash -c "$(declare -f set_up_app); set_up_app"
 
 # Systemd service
-cat > /etc/systemd/system/app.service << EOD
+cat > /etc/systemd/system/kulterier-app.service << EOD
 [Unit]
-Description=app
+Description=kulterier-app
 StartLimitIntervalSec=500
 StartLimitBurst=5
 
 [Service]
-User=app
+User=kulterier-app
 Restart=on-failure
 RestartSec=5s
 Environment="BIFF_PROFILE=$BIFF_PROFILE"
-WorkingDirectory=/home/app
+WorkingDirectory=/home/kulterier-app
 ExecStart=/bin/sh -c "mkdir -p target/resources; clj -M:prod"
 
 [Install]
 WantedBy=multi-user.target
 EOD
-systemctl enable app
+systemctl enable kulterier-app
 cat > /etc/systemd/journald.conf << EOD
 [Journal]
 Storage=persistent
 EOD
 systemctl restart systemd-journald
-cat > /etc/sudoers.d/restart-app << EOD
-app ALL= NOPASSWD: /bin/systemctl reset-failed app.service
-app ALL= NOPASSWD: /bin/systemctl restart app
-app ALL= NOPASSWD: /usr/bin/systemctl reset-failed app.service
-app ALL= NOPASSWD: /usr/bin/systemctl restart app
+cat > /etc/sudoers.d/restart-kulterier-app << EOD
+kulterier-app ALL= NOPASSWD: /bin/systemctl reset-failed kulterier-app.service
+kulterier-app ALL= NOPASSWD: /bin/systemctl restart kulterier-app
+kulterier-app ALL= NOPASSWD: /usr/bin/systemctl reset-failed kulterier-app.service
+kulterier-app ALL= NOPASSWD: /usr/bin/systemctl restart kulterier-app
 EOD
-chmod 440 /etc/sudoers.d/restart-app
+chmod 440 /etc/sudoers.d/restart-kulterier-app
 
 # Firewall
 ufw allow OpenSSH
@@ -89,18 +89,18 @@ ln -s /snap/bin/certbot /usr/bin/certbot
 
 # Nginx
 rm /etc/nginx/sites-enabled/default
-cat > /etc/nginx/sites-available/app << EOD
+cat > /etc/nginx/sites-available/kulterier-app << EOD
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name _;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-    root /home/app/target/resources/public;
+    root /home/kulterier-app/target/resources/public;
     location / {
         try_files \$uri \$uri/index.html @resources;
     }
     location @resources {
-        root /home/app/resources/public;
+        root /home/kulterier-app/resources/public;
         try_files \$uri \$uri/index.html @proxy;
     }
     location @proxy {
@@ -113,7 +113,7 @@ server {
     }
 }
 EOD
-ln -s /etc/nginx/sites-{available,enabled}/app
+ln -s /etc/nginx/sites-{available,enabled}/kulterier-app
 
 # Firewall
 ufw allow "Nginx Full"
