@@ -23,7 +23,7 @@
     (str "/js/main.js?t=" last-modified)
     "/js/main.js"))
 
-(defn base [{:keys [::recaptcha] :as ctx} & body]
+(defn base [{:keys [::recaptcha biff/base-url] :as ctx} & body]
   (apply
    biff/base-html
    (-> ctx
@@ -31,7 +31,7 @@
                      :lang "pl-PL"
                      :icon "/img/kulterier.svg"
                      :description (str settings/app-name " - pies na kulturę")
-                     :image "/img/kulterier.svg"})
+                     :image (str base-url "/img/kulterier.svg")})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
                                      [:link {:rel "stylesheet" :href "/css/switzer.css"}]
