@@ -29,9 +29,9 @@
    (-> ctx
        (merge #:base{:title settings/app-name
                      :lang "pl-PL"
-                     :icon "/img/glider.png"
-                     :description (str settings/app-name " Description")
-                     :image "https://clojure.org/images/clojure-logo-120b.png"})
+                     :icon "/img/kulterier.svg"
+                     :description (str settings/app-name " - pies na kulturę")
+                     :image "/img/kulterier.svg"})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
                                      [:link {:rel "stylesheet" :href "/css/switzer.css"}]
