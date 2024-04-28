@@ -228,22 +228,34 @@
     [:label.m-2 {:class ["font-bold" "cursor-pointer" "transition-all" "ease-in-out" "underline-offset-4"
                          "text-sm" "md:text-base"
                          "hover:scale-110" "hover:underline" "hover:mx-3" "has-[:checked]:underline"]}
-     [:input {:class ["mx-1" "dark:px-100"
-                      "text-slate-700" "dark:text-slate-900" "focus:ring-slate-600"
-                      "border-gray-400" "dark:border-gray-900" "dark:bg-gray-300"]
-              :type "radio" :name "category"
-              :role "tab" :aria-controls "event-panel"
-              :hx-get (str "/events/" keyname)
-              :hx-push-url (str "/" keyname)
-              :value keyname
-              :aria-selected (str selected?)
-              :checked (when selected? "1")}]
+     [:input.category-tab {:class ["mx-1" "dark:px-100"
+                                   "text-slate-700" "dark:text-slate-900" "focus:ring-slate-600"
+                                   "border-gray-400" "dark:border-gray-900" "dark:bg-gray-300"]
+                           :type "radio" :name "category"
+                           :role "tab" :aria-controls "event-panel"
+                           :hx-get (str "/events/" keyname)
+                           :hx-push-url (str "/" keyname)
+                           :hx-indicator ".tab-load-indicator"
+                           :value keyname
+                           :aria-selected (str selected?)
+                           :checked (when selected? "1")}]
      label]))
+
+(defn load-indicator
+  [& classes]
+  [:p.text-center.text-md.font-bold.m-0 {:class (into ["htmx-indicator"] classes)}
+   [:img.inline {:src "/img/rings.svg"
+                 :width 24
+                 :class "bg-gray-800 mx-1 rounded-full dark:bg-transparent align-middle"
+                 :alt "Spinning in-progress indicator"}]
+   [:span.inline-block.animate-bounce.align-middle "Węszę..."]])
 
 (defn event-tab-list
   [selected-tab]
   [:<>
-   [:fieldset {:role "tablist" :class ["flex" "justify-center" "items-center" "my-4"]}
+   [:fieldset {:role "tablist"
+               :hx-sync "this:abort"
+               :class ["flex" "justify-center" "items-center" "my-4"]}
     (event-tab :permanent "Stałe" (= selected-tab :permanent))
     [:div "•"]
     (event-tab :temporary "Tymczasowe" (= selected-tab :temporary))
@@ -252,11 +264,11 @@
 
 (defn event-tab-panel
   [content]
-  [:div {:aria-role "tabpanel"}
-   content])
+  (into [:div {:aria-role "tabpanel"}]
+        content))
 
 (defn event-tab-container
-  [selected-tab tab-content]
+  [selected-tab & tab-content]
   [:<>
    (event-tab-list selected-tab)
    (event-tab-panel tab-content)])
@@ -269,7 +281,7 @@
      :xmlns "http://www.w3.org/2000/svg",
      :xml:space "preserve",
      :width (or width height "268.2"),
-     :height (or height width "259.2",)
+     :height (or height width "259.2")
      :viewBox "0 0 71 68.6"}
     [:g
      {:transform "translate(-67.6 -33.2)"}
@@ -507,4 +519,3 @@
                                      :target "_blank"}
      "Konrad Wątor"]
     "."]])
-

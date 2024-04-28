@@ -10,15 +10,19 @@
 
 (defn permanent-events [_]
   (ui/event-tab-container :permanent
+                          (ui/load-indicator "tab-load-indicator")
                           (ui/permanent-events-table
                            (:permanent (scraper/get-events)))))
 
 (defn temporary-events [_]
-  (ui/event-tab-container :temporary (ui/temporary-events-table
-                                      (:temporary (scraper/get-events)))))
+  (ui/event-tab-container :temporary
+                          (ui/load-indicator "tab-load-indicator")
+                          (ui/temporary-events-table
+                           (:temporary (scraper/get-events)))))
 
 (defn timetable-events [_]
   (ui/event-tab-container :timetable
+                          (ui/load-indicator "tab-load-indicator")
                           (ui/timetable-events-table
                            (:timetable (scraper/get-events)))))
 
@@ -36,7 +40,7 @@
                         :hx-get content-uri
                         :hx-target "this"
                         :hx-swap "innerHTML"}
-      [:p.text-center.animate-bounce "Węszę..."]]
+      (ui/load-indicator "tab-load-indicator")]
      (ui/footer))))
 
 (def module
