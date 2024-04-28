@@ -45,9 +45,23 @@
                                     head))))
    body))
 
+(defn fixed-load-indicator
+  [& classes]
+  [:p.htmx-indicator
+   {:class (into ["text-center" "text-md" "font-bold" "m-0" "fixed"
+                  "text-slate-100" "bg-neutral-800" "dark:bg-slate-600"
+                  "top-0" "py-4" "w-screen" "transition" "delay-500"]
+                 classes)}
+   [:img.inline {:src "/img/rings.svg"
+                 :width 24
+                 :class ["mx-1" "align-middle"]
+                 :alt "Animated progress indicator"}]
+   [:span.inline-block.animate-bounce.align-middle "Węszę..."]])
+
 (defn page [ctx & body]
   (base
    ctx
+   (fixed-load-indicator "global-load-indicator")
    [:.flex-grow]
    [:.mx-auto.w-full.py-2.md:p-6
     (when (bound? #'csrf/*anti-forgery-token*)
@@ -235,27 +249,18 @@
                            :role "tab" :aria-controls "event-panel"
                            :hx-get (str "/events/" keyname)
                            :hx-push-url (str "/" keyname)
-                           :hx-indicator ".tab-load-indicator"
+                           :hx-indicator ".global-load-indicator"
                            :value keyname
                            :aria-selected (str selected?)
                            :checked (when selected? "1")}]
      label]))
-
-(defn load-indicator
-  [& classes]
-  [:p.text-center.text-md.font-bold.m-0 {:class (into ["htmx-indicator"] classes)}
-   [:img.inline {:src "/img/rings.svg"
-                 :width 24
-                 :class "bg-gray-800 mx-1 rounded-full dark:bg-transparent align-middle"
-                 :alt "Spinning in-progress indicator"}]
-   [:span.inline-block.animate-bounce.align-middle "Węszę..."]])
 
 (defn event-tab-list
   [selected-tab]
   [:<>
    [:fieldset {:role "tablist"
                :hx-sync "this:abort"
-               :class ["flex" "justify-center" "items-center" "my-4"]}
+               :class ["flex" "justify-center" "items-center" "my-6"]}
     (event-tab :permanent "Stałe" (= selected-tab :permanent))
     [:div "•"]
     (event-tab :temporary "Tymczasowe" (= selected-tab :temporary))

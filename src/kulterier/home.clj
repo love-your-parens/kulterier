@@ -10,19 +10,16 @@
 
 (defn permanent-events [_]
   (ui/event-tab-container :permanent
-                          (ui/load-indicator "tab-load-indicator")
                           (ui/permanent-events-table
                            (:permanent (scraper/get-events)))))
 
 (defn temporary-events [_]
   (ui/event-tab-container :temporary
-                          (ui/load-indicator "tab-load-indicator")
                           (ui/temporary-events-table
                            (:temporary (scraper/get-events)))))
 
 (defn timetable-events [_]
   (ui/event-tab-container :timetable
-                          (ui/load-indicator "tab-load-indicator")
                           (ui/timetable-events-table
                            (:timetable (scraper/get-events)))))
 
@@ -40,7 +37,13 @@
                         :hx-get content-uri
                         :hx-target "this"
                         :hx-swap "innerHTML"}
-      (ui/load-indicator "tab-load-indicator")]
+      [:p {:class ["text-center" "text-md" "font-bold" "m-0"]}
+       [:img.inline {:src "/img/rings.svg"
+                     :width 24
+                     :class ["bg-gray-800" "mx-1" "rounded-full"
+                             "dark:bg-transparent" "align-middle"]
+                     :alt "Animated progress indicator"}]
+       [:span.inline-block.animate-bounce.align-middle "Węszę..."]]]
      (ui/footer))))
 
 (def module
