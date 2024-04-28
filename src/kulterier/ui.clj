@@ -268,9 +268,9 @@
     (event-tab :timetable "Pojedyncze" (= selected-tab :timetable))]])
 
 (defn event-tab-panel
-  [content]
+  [contents]
   (into [:div {:aria-role "tabpanel"}]
-        content))
+        contents))
 
 (defn event-tab-container
   [selected-tab & tab-content]
