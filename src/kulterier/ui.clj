@@ -47,16 +47,15 @@
 
 (defn fixed-load-indicator
   [& classes]
-  [:p.htmx-indicator
-   {:class (into ["text-center" "text-md" "font-bold" "m-0" "fixed"
-                  "text-slate-100" "bg-neutral-800" "dark:bg-slate-600"
-                  "top-0" "py-4" "w-screen" "transition" "delay-500"]
+  [:div.htmx-indicator
+   {:class (into ["text-right" "fixed" "top-0" "w-screen" "transition"
+                  "pointer-events-none"]
                  classes)}
-   [:img.inline {:src "/img/rings.svg"
-                 :width 24
-                 :class ["mx-1" "align-middle"]
-                 :alt "Animated progress indicator"}]
-   [:span.inline-block.animate-bounce.align-middle "Węszę..."]])
+   [:img {:src "/img/rings.svg"
+          :width 40 :height 40
+          :class ["inline" "align-middle" "bg-gray-800"
+                  "rounded-full" "m-6"]
+          :alt "Animated progress indicator"}]])
 
 (defn page [ctx & body]
   (base
