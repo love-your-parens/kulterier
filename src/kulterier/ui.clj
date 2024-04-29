@@ -29,9 +29,9 @@
    (-> ctx
        (merge #:base{:title settings/app-name
                      :lang "pl-PL"
-                     :icon "/img/kulterier-emblem.png"
+                     :icon "/img/kulterier-emblem-sm.png"
                      :description (str settings/app-name " - pies na kulturę")
-                     :image (str base-url "/img/kulterier-emblem.png")})
+                     :image (str base-url "/img/kulterier-emblem-sm.png")})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
                                      [:link {:rel "stylesheet" :href "/css/switzer.css"}]
