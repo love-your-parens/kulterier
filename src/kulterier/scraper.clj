@@ -1,7 +1,7 @@
 (ns kulterier.scraper (:require [bottom-of-the-barrel.core :as source]
                                 [clojure.core.match :as m :refer [match] ]))
 
-(def cache-expiry 3600)
+(def cache-expiry (* 60 60 24))
 
 (defn fetch
   "Retrieves events (exhibitions) from all registered sources.
