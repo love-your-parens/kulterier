@@ -118,6 +118,7 @@
    (str "#" (case event-type-key
               :museum "muzeum"
               :movie "kino"
+              :theatre "teatr"
               "inne"))])
 
 (comment
