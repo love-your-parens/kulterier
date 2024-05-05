@@ -1,6 +1,7 @@
 (ns kulterier.ui
   (:require [cheshire.core :as cheshire]
             [clojure.java.io :as io]
+            [clojure.set :as sets]
             [kulterier.settings :as settings]
             [com.biffweb :as biff]
             [ring.middleware.anti-forgery :as csrf]
@@ -111,20 +112,23 @@
                       "dark:border-slate-400"]}]])
     (if url (text-link title url) title)]))
 
+(defn event-type-name
+  [event-type-key]
+  (case event-type-key
+    :museum "muzeum"
+    :movie "kino"
+    :theatre "teatr"
+    "inne"))
+
 (defn event-type-tag
   [event-type-key]
   [:span.font-light
    {:class ["text-slate-600" "dark:text-slate-400"]}
-   (str "#" (case event-type-key
-              :museum "muzeum"
-              :movie "kino"
-              :theatre "teatr"
-              "inne"))])
+   (str "#" (event-type-name event-type-key))])
 
 (comment
   (event-type-tag :whatever)
-  (event-type-tag :movie)
-  )
+  (event-type-tag :movie))
 
 (defn title-row
   [colspan title url thumbnail]
@@ -236,9 +240,18 @@
            (description-row colspan (:description d) i)]))]
      [:tfoot]]))
 
+(defn event-tab-url
+  "Produces a pair of URLs for any given event key.
+  First item represents the URL of the AJAX content-source.
+  The second item represents the navigation URL."
+  [key]
+  (let [k (name key)]
+    [(str "/events/" k)
+     (str "/" k)]))
+
 (defn event-tab
   [key label selected?]
-  (let [keyname (name key)]
+  (let [[ajax-url navigation-url] (event-tab-url key)]
     [:label.m-2 {:class ["font-bold" "cursor-pointer" "transition-all" "ease-in-out" "underline-offset-4"
                          "text-sm" "md:text-base"
                          "hover:scale-110" "hover:underline" "hover:mx-3" "has-[:checked]:underline"]}
@@ -247,10 +260,9 @@
                                    "border-gray-400" "dark:border-gray-900" "dark:bg-gray-300"]
                            :type "radio" :name "category"
                            :role "tab" :aria-controls "event-panel"
-                           :hx-get (str "/events/" keyname)
-                           :hx-push-url (str "/" keyname)
+                           :hx-get ajax-url
+                           :hx-push-url navigation-url
                            :hx-indicator ".global-load-indicator"
-                           :value keyname
                            :aria-selected (str selected?)
                            :checked (when selected? "1")}]
      label]))
@@ -268,15 +280,53 @@
     (event-tab :timetable "Pojedyncze" (= selected-tab :timetable))]])
 
 (defn event-tab-panel
-  [contents]
+  [& contents]
   (into [:div {:aria-role "tabpanel"}]
         contents))
 
-(defn event-tab-container
-  [selected-tab & tab-content]
-  [:<>
-   (event-tab-list selected-tab)
-   (event-tab-panel tab-content)])
+(defn- get-event-types
+  [event-data]
+  (map (juxt identity event-type-name) ; key,name
+       (let [get-type (comp :type second)]
+         (reduce (fn [ts event]
+                   (if-let [t (get-type event)]
+                     (conj ts t) ts))
+                 #{}
+                 event-data))))
+
+(defn event-type-filter
+  [params known-types]
+  (when (> (count known-types) 1)
+    (let [type-keys (set (map first known-types))
+          requested-types (set (map keyword
+                                    (let [ts (:event-type params)]
+                                      (when ts (if (coll? ts) ts (vector ts))))))
+          selected-types (sets/intersection type-keys requested-types)
+          select-all (or (empty? selected-types)
+                         (= selected-types type-keys))]
+      [:fieldset {:class ["disabled:opacity-50"] :onchange "requestSubmit()"}
+       [:span.font-bold.mr-3 "Rodzaj wydarzenia:"]
+       [:label.all.mx-1 {:onchange "this.parentElement
+                                           .querySelectorAll('.individual > input[type=checkbox]')
+                                           .forEach(el => el.checked = null)"
+                         :class ["hover:underline" "cursor-pointer"]}
+        [:input.mr-1 {:type "checkbox" :checked select-all :disabled select-all}]
+        "Wszystkie"]
+       (for [[k t] known-types]
+         [:label.mx-1.individual
+          {:onchange "this.parentElement.querySelector('.all > input[type=checkbox]').checked = null"
+           :class ["hover:underline" "cursor-pointer"]}
+          [:input.mr-1 {:type "checkbox" :name "event-type" :value k
+                        :checked (and (not select-all) (selected-types k))}]
+          [:span.capitalize t]])])))
+
+(defn event-tab-filters
+  [params selected-tab event-data]
+  (let [[ajax-url navigation-url] (event-tab-url selected-tab)
+        types (get-event-types event-data)]
+    [:form.flex.justify-center
+     {:hx-get ajax-url :hx-trigger "submit delay:1000" :hx-indicator ".global-load-indicator"}
+     (event-type-filter params types)]))
 
 (defn kulterier-logo
   ([& {:keys [width height id class] :as params}]
@@ -524,3 +574,10 @@
                                      :target "_blank"}
      "Konrad Wątor"]
     "."]])
+
+(defn type-filter [params event-data]
+  (let [requested-types (set (map keyword
+                                  (let [ts (:event-type params)]
+                                    (when ts (if (coll? ts) ts (vector ts))))))]
+    (if (empty? requested-types) event-data
+        (filter #(requested-types (:type %))))))

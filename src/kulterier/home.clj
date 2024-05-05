@@ -8,20 +8,36 @@
             [xtdb.api :as xt]
             [kulterier.scraper :as scraper]))
 
-(defn permanent-events [_]
-  (ui/event-tab-container :permanent
-                          (ui/permanent-events-table
-                           (:permanent (scraper/get-events)))))
+(defn- filter-events-by-request-params
+  [event-data params]
+  (let [requested-types (set (map keyword
+                                  (let [ts (:event-type params)]
+                                    (when ts (if (coll? ts) ts (vector ts))))))]
+    (if (empty? requested-types) event-data
+        (filter #(requested-types (-> % second :type))
+                event-data))))
 
-(defn temporary-events [_]
-  (ui/event-tab-container :temporary
-                          (ui/temporary-events-table
-                           (:temporary (scraper/get-events)))))
+(defn permanent-events [{:keys [params]}]
+  (let [event-data (:permanent (scraper/get-events))]
+    [:<>
+    (ui/event-tab-list :permanent)
+    ;; (ui/event-tab-filters params :permanent event-data)
+    (ui/event-tab-panel (ui/permanent-events-table event-data))]))
 
-(defn timetable-events [_]
-  (ui/event-tab-container :timetable
-                          (ui/timetable-events-table
-                           (:timetable (scraper/get-events)))))
+(defn temporary-events [{:keys [params]}]
+  (let [event-data (:temporary (scraper/get-events))]
+    [:<>
+    (ui/event-tab-list :temporary)
+    ;; (ui/event-tab-filters params :temporary event-data)
+    (ui/event-tab-panel (ui/temporary-events-table event-data))]))
+
+(defn timetable-events [{:keys [params]}]
+  (let [event-data (:timetable (scraper/get-events))
+        filtered-data (filter-events-by-request-params event-data params)]
+    [:<>
+     (ui/event-tab-list :timetable)
+     (ui/event-tab-filters params :timetable event-data)
+     (ui/event-tab-panel (ui/timetable-events-table filtered-data))]))
 
 (defn home-page [content-uri]
   (fn [{:keys [recaptcha/site-key params] :as ctx}]
