@@ -6,30 +6,38 @@
             [kulterier.settings :as settings]
             [rum.core :as rum]
             [xtdb.api :as xt]
-            [kulterier.scraper :as scraper]))
+            [kulterier.scraper :as scraper]
+            [kulterier.filtering :as fltr]))
+
 
 (defn- filter-events-by-request-params
   [event-data params]
-  (let [requested-types (set (map keyword
-                                  (let [ts (:event-type params)]
-                                    (when ts (if (coll? ts) ts (vector ts))))))]
-    (if (empty? requested-types) event-data
-        (filter #(requested-types (-> % second :type))
-                event-data))))
+  (let [requested-types (->> (:event-type params) fltr/query-param->vec (map keyword) set)
+        requested-venues (fltr/query-param->set (:event-venue params))]
+    (-> event-data
+        (fltr/in-set requested-types #(-> % second :type))
+        (fltr/in-set requested-venues #(-> % second :place)))))
+
 
 (defn permanent-events [{:keys [params]}]
-  (let [event-data (:permanent (scraper/get-events))]
+  (let [event-data (:permanent (scraper/get-events))
+        filtered-data (filter-events-by-request-params event-data params)]
     [:<>
-    (ui/event-tab-list :permanent)
-    ;; (ui/event-tab-filters params :permanent event-data)
-    (ui/event-tab-panel (ui/permanent-events-table event-data))]))
+     (ui/event-tab-list :permanent)
+     (ui/event-tab-filters params :permanent event-data)
+     [:div {:aria-role "tabpanel"}
+      (ui/permanent-events-table filtered-data)]]))
+
 
 (defn temporary-events [{:keys [params]}]
-  (let [event-data (:temporary (scraper/get-events))]
+  (let [event-data (:temporary (scraper/get-events))
+        filtered-data (filter-events-by-request-params event-data params)]
     [:<>
-    (ui/event-tab-list :temporary)
-    ;; (ui/event-tab-filters params :temporary event-data)
-    (ui/event-tab-panel (ui/temporary-events-table event-data))]))
+     (ui/event-tab-list :temporary)
+     (ui/event-tab-filters params :temporary event-data)
+     [:div {:aria-role "tabpanel"}
+      (ui/temporary-events-table filtered-data)]]))
+
 
 (defn timetable-events [{:keys [params]}]
   (let [event-data (:timetable (scraper/get-events))
@@ -37,7 +45,9 @@
     [:<>
      (ui/event-tab-list :timetable)
      (ui/event-tab-filters params :timetable event-data)
-     (ui/event-tab-panel (ui/timetable-events-table filtered-data))]))
+     [:div {:aria-role "tabpanel"}
+      (ui/timetable-events-table filtered-data)]]))
+
 
 (defn home-page [content-uri]
   (fn [{:keys [recaptcha/site-key params] :as ctx}]
@@ -61,6 +71,7 @@
                      :alt "Animated progress indicator"}]
        [:span.inline-block.animate-bounce.align-middle "Węszę..."]]]
      (ui/footer))))
+
 
 (def module
   {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}
