@@ -7,6 +7,7 @@
             [rum.core :as rum]
             [xtdb.api :as xt]
             [kulterier.scraper :as scraper]
+            [kulterier.svg :as svg]
             [kulterier.filtering :as fltr]))
 
 
@@ -54,7 +55,7 @@
     (ui/page
      ctx
      [:header.text-center.mb-6
-      (ui/kulterier-logo :width 160 :height 160
+      (svg/kulterier-logo :width 160 :height 160
                          :class ["m-auto" "text-center"])
       [:div.inline-block
        [:h1 {:class ["text-5xl font-black"]} "Kulterier"]

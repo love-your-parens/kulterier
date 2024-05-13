@@ -117,11 +117,12 @@
 (defn filter-popup
   [& contents]
   (into [:div#filter-popup
-         {:class ["fixed" "top-0" "-top-[100vh]" "left-0" "max-h-full" "w-full" "overflow-scroll" "p-10"
+         {:class ["fixed" "-top-[100vh]" "left-0" "max-h-full" "w-full" "overflow-scroll" "p-10"
                   "bg-slate-950" "text-slate-200" "transition-all"]}
          [:div.float-right.font-black.bg-white.rounded-full.text-black
-          {:class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "cursor-pointer"]
-           :onclick "this.parentNode.classList.add('-top-[100vh]')"
+          {:class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "cursor-pointer"
+                   "transition-transform" "hover:scale-110"]
+           :onclick "this.parentNode.classList.replace('top-0', '-top-[100vh]')"
            :title "Zamknij"}
           "X"]
          [:p.text-4xl.font-black "Czego szukamy?"]]
@@ -132,7 +133,7 @@
   [text-element]
   [:p {:class ["m-auto" "text-right" "-mt-4" "mb-4" "max-w-[95%]" "md:max-w-[1024px]" "text-sm" "font-bold"]}
    [:a.cursor-pointer.inline-block
-    {:onclick "document.querySelector('#filter-popup').classList.remove('-top-[100vh]')"
+    {:onclick "document.querySelector('#filter-popup').classList.replace('-top-[100vh]', 'top-0')"
      :class ["transition-transform" "hover:scale-110"]}
     (svg/magnifying-glass :height "20px" :class ["fill-slate-900" "dark:fill-slate-200" "inline" "mr-3"])
     text-element]])
@@ -351,8 +352,8 @@
                                     .forEach(el => el.checked = null)"
                     :class ["mx-1" "hover:underline" "cursor-pointer" "block" "whitespace-nowrap"]}
         [:input {:type "checkbox" :checked select-all :disabled select-all
-                 :class ["rounded-full" "text-slate-700" "dark:text-slate-900" "focus:ring-slate-600"
-                         "border-gray-400" "dark:border-gray-900" "dark:bg-gray-300"]}]
+                 :class ["rounded-full" "text-slate-700" "focus:ring-slate-600"
+                         "border-gray-900" "bg-gray-300"]}]
         "Wszystkie"]
        (next
         (interleave
@@ -363,9 +364,8 @@
              :class ["hover:underline" "cursor-pointer" "inline-block" "whitespace-nowrap"]}
             [:input {:type "checkbox" :name property-key :value v
                      :checked (and (not select-all) (selected v))
-                     :class ["mx-1" "rounded" "text-slate-700" "dark:text-slate-900"
-                             "focus:ring-slate-600" "border-gray-400" "dark:border-gray-900"
-                             "dark:bg-gray-300"]}]
+                     :class ["mx-1" "rounded" "text-slate-700" "focus:ring-slate-600"
+                             "border-gray-900" "bg-gray-300"]}]
             [:span.capitalize l]])))])))
 
 
