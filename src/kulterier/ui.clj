@@ -72,10 +72,11 @@
   []
   [:div#back-to-top
    {:class ["fixed" "h-[60px]" "w-[60px]" "bottom-0" "right-0"
-            "mr-10" "mb-10" "flex" "justify-center" "items-center"
+            "mr-5" "md:mr-10" "mb-10" "flex" "justify-center" "items-center"
             "bg-slate-800" "text-slate-300" "dark:bg-slate-400" "dark:text-slate-900"
             "rounded-full" "text-4xl" "font-semibold" "cursor-pointer"
-            "transition-opacity" "opacity-0" "pointer-events-none"]}
+            "transition-all" "opacity-0" "pointer-events-none"
+            "hover:scale-110"]}
    [:div {:title "Wróć na górę"} "↑"]])
 
 
@@ -117,25 +118,35 @@
 (defn filter-popup
   [& contents]
   (into [:div#filter-popup
-         {:class ["fixed" "-top-[100vh]" "left-0" "max-h-full" "w-full" "overflow-scroll" "p-10"
-                  "bg-slate-950" "text-slate-200" "transition-all"]}
+         {:class ["group/popup"
+                  "fixed" "z-10" "-top-[100vh]" "left-0" "max-h-full" "w-full"
+                  "overflow-scroll" "p-10" "bg-slate-950" "text-neutral-100"
+                  "text-sm" "md:text-md"
+                  "transition-all"]}
          [:div.float-right.font-black.bg-white.rounded-full.text-black
-          {:class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "cursor-pointer"
-                   "transition-transform" "hover:scale-110"]
+          {:class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center"
+                   "cursor-pointer" "transition-transform" "hover:scale-110"
+                   "mt-1"]
            :onclick "this.parentNode.classList.replace('top-0', '-top-[100vh]')"
            :title "Zamknij"}
           "X"]
-         [:p.text-4xl.font-black "Czego szukamy?"]]
+         [:p.font-black {:class ["text-3xl" "md:text-4xl"]}
+          "Czego szukamy?"]]
         contents))
 
 
 (defn filter-popup-toggle
   [text-element]
-  [:p {:class ["m-auto" "text-right" "-mt-4" "mb-4" "max-w-[95%]" "md:max-w-[1024px]" "text-sm" "font-bold"]}
+  [:p {:class ["text-right" "m-auto" "-mt-1" "-md:mt-4" "mb-2" "md:mb-4"
+               "max-w-[90%]" "md:max-w-[1024px]" "text-xs" "md:text-sm"
+               "font-bold"]}
    [:a.cursor-pointer.inline-block
     {:onclick "document.querySelector('#filter-popup').classList.replace('-top-[100vh]', 'top-0')"
      :class ["transition-transform" "hover:scale-110"]}
-    (svg/magnifying-glass :height "20px" :class ["fill-slate-900" "dark:fill-slate-200" "inline" "mr-3"])
+    (svg/magnifying-glass
+     :class ["w-[14px]" "md:w-[20px]" "h-[14px]" "md:h-[20px]"
+             "fill-slate-900" "dark:fill-slate-200"
+             "inline" "mr-1" "md:mr-3"])
     text-element]])
 
 
