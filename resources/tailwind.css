@@ -33,6 +33,17 @@
 }
 
 @layer utilities {
+  #changelog h1{
+    @apply text-2xl font-black mb-3;
+  }
+
+  #changelog h2{
+    @apply text-xl font-bold my-2;
+  }
+
+  #changelog h3{
+    @apply text-lg font-medium my-2;
+  }
 }
 
 .grecaptcha-badge { visibility: hidden; }
