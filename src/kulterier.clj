@@ -1,8 +1,8 @@
 (ns kulterier
   (:require [com.biffweb :as biff]
             [kulterier.email :as email]
-            [kulterier.app :as app]
             [kulterier.home :as home]
+            [kulterier.changelog :as changelog]
             [kulterier.middleware :as mid]
             [kulterier.ui :as ui]
             [kulterier.worker :as worker]
@@ -16,9 +16,9 @@
   (:gen-class))
 
 (def modules
-  [app/module
-   (biff/authentication-module {})
+  [(biff/authentication-module {})
    home/module
+   changelog/module
    schema/module
    worker/module])
 

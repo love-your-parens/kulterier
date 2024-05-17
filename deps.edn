@@ -12,7 +12,9 @@
         org.slf4j/slf4j-simple {:mvn/version "2.0.0-alpha5"}
         org.slf4j/log4j-over-slf4j {:mvn/version "1.7.36"}
         org.slf4j/jul-to-slf4j {:mvn/version "1.7.36"}
-        org.slf4j/jcl-over-slf4j {:mvn/version "1.7.36"}}
+        org.slf4j/jcl-over-slf4j {:mvn/version "1.7.36"}
+
+        markdown-to-hiccup/markdown-to-hiccup {:mvn/version "0.6.2"}}
  :aliases
  {:dev {:extra-deps {com.biffweb/tasks {:git/url "https://github.com/jacobobryant/biff", :git/sha "09ef8ce", :git/tag "v1.8.8", :deps/root "libs/tasks"}}
         :extra-paths ["dev" "test"]
