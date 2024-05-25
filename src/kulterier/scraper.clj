@@ -61,13 +61,19 @@
             events))
 
 (defn expand-timetable-events
+  "Expands timetable events on a per-date basis.
+  An event with X dates will produce X events with 1 date each.
+  Note: :date of timetable events is inherently a coll by definition."
   [events]
-  (reduce (fn [expanded-events e]
-            (into expanded-events
-                  (for [d (:date e)]
-                    (assoc e :date d))))
-          []
-          events))
+  (let [now ^java.time.ZonedDateTime (java.time.ZonedDateTime/now)]
+    (reduce (fn [expanded-events e]
+              (into expanded-events
+                    ;; Drop past events
+                    (keep #(when (<= (.compareTo now %) 0)
+                             (assoc e :date %))
+                          (:date e))))
+            []
+            events)))
 
 (defn expand-grouped-events
   "Applies expansion to each distinct event-group, retaining the groupings."
