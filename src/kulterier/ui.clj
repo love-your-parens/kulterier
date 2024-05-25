@@ -119,35 +119,38 @@
   [& contents]
   (into [:div#filter-popup
          {:class ["group/popup"
+                  "invisible"
                   "fixed" "z-10" "-top-[100vh]" "left-0" "max-h-full" "w-full"
                   "overflow-scroll" "p-10" "bg-slate-950" "text-neutral-100"
                   "text-sm" "md:text-md"
                   "transition-all"]}
-         [:div.float-right.font-black.bg-white.rounded-full.text-black
-          {:class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center"
-                   "cursor-pointer" "transition-transform" "hover:scale-110"
-                   "mt-1"]
-           :onclick "this.parentNode.classList.replace('top-0', '-top-[100vh]')"
-           :title "Zamknij"}
-          "X"]
+         [:input {:type "button"
+                  :id "filter-popup--close"
+                  :class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "mt-1"
+                          "cursor-pointer" "transition-transform" "hover:scale-110"
+                          "float-right" "font-black" "bg-white" "rounded-full" "text-black"]
+                  :onclick "hideFilterPopup()"
+                  :title "Zamknij"
+                  :value "X"}]
          [:p.font-black {:class ["text-3xl" "md:text-4xl"]}
           "Czego szukamy?"]]
         contents))
 
 
 (defn filter-popup-toggle
-  [text-element]
+  [text]
   [:p {:class ["text-right" "m-auto" "-mt-1" "-md:mt-4" "mb-2" "md:mb-4"
                "max-w-[90%]" "md:max-w-[1024px]" "text-xs" "md:text-sm"
                "font-bold"]}
-   [:a.cursor-pointer.inline-block
-    {:onclick "document.querySelector('#filter-popup').classList.replace('-top-[100vh]', 'top-0')"
-     :class ["transition-transform" "hover:scale-110"]}
+   [:label
+    {:class ["cursor-pointer" "inline-block" "transition-transform" "hover:scale-110"]}
     (svg/magnifying-glass
      :class ["w-[14px]" "md:w-[20px]" "h-[14px]" "md:h-[20px]"
              "fill-slate-900" "dark:fill-slate-200"
-             "inline" "mr-1" "md:mr-3"])
-    text-element]])
+             "inline" "mr-1" "md:mr-2"])
+    [:input {:type "button" :class ["cursor-pointer"]
+             :onclick "showFilterPopup()"
+             :value (str text)}]]])
 
 
 (defn title-cell
@@ -177,7 +180,7 @@
 (defn event-type-tag
   [event-type-key]
   [:span.font-light
-   {:class ["text-slate-600" "dark:text-slate-400"]}
+   {:class ["text-slate-600" "dark:text-slate-300"]}
    (str "#" (util/event-type-name event-type-key))])
 
 (comment
@@ -402,7 +405,7 @@
                   "border-slate-900" "dark:border-slate-100"
                   "h-[66px]" "w-[66px]"  "overflow-hidden"
                   "hover:animate-spin"]}
-    (svg/kulterier-logo :height 60 :class ["m-auto"  "pl-1"])]
+    (svg/kulterier-logo :height 60 :class ["m-auto"  "pl-1"] :alt "Logo Kulteriera")]
    [:p {:class ["text-center" "m-auto" "ml-1" "my-2" "py-3" "px-3" "align-middle"
                 "border-t"  "border-b" "border-slate-900" "dark:border-slate-100"
                 "border-dotted" "inline-block"]}

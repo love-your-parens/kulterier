@@ -56,7 +56,8 @@
      ctx
      [:header.text-center.mb-6
       (svg/kulterier-logo :width 160 :height 160
-                         :class ["m-auto" "text-center"])
+                          :class ["m-auto" "text-center"]
+                          :alt "")
       [:div.inline-block
        [:h1 {:class ["text-5xl font-black"]} "Kulterier"]
        [:h2.text-2xl.font-light.lowercase "Na tropie kultury"]]]

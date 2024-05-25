@@ -26,3 +26,18 @@ document.addEventListener(
         })
     }
 )
+
+function showFilterPopup()
+{
+    let popup = document.querySelector('#filter-popup')
+    popup.classList.remove('invisible')
+    popup.classList.replace('-top-[100vh]', 'top-0')
+    popup.querySelector("#filter-popup--close").focus()
+}
+
+function hideFilterPopup()
+{
+    let popup = document.querySelector('#filter-popup')
+    popup.classList.replace('top-0', '-top-[100vh]')
+    popup.classList.add('invisible')
+}

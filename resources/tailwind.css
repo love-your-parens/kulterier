@@ -28,7 +28,7 @@
     @apply bg-slate-500 hover:bg-slate-800 text-center py-2 px-4 rounded disabled:opacity-50 text-white;
   }
   .link {
-    @apply text-slate-600 dark:text-slate-400 hover:underline;
+    @apply text-slate-600 dark:text-slate-300 hover:underline;
   }
 }
 
