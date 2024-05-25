@@ -80,6 +80,22 @@
    [:div {:title "Wróć na górę"} "↑"]])
 
 
+(defn screen-overlay-popup []
+  [:div {:id "overlay-popup"
+               :class ["fixed" "h-full" "w-full" "bg-neutral-900" "text-gray-200" "opacity-95"
+                       "overflow-scroll"
+                       "transition-all" "z-100" "-left-[100vw]" "invisible"]}
+         [:input {:type "button"
+                  :id "overlay-popup--close"
+                  :class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "m-6"
+                          "cursor-pointer" "transition-transform" "hover:scale-110"
+                          "float-right" "font-black" "bg-white" "rounded-full" "text-black"]
+                  :onclick "hideOverlayPopup()"
+                  :title "Zamknij"
+                  :value "X"}]
+   [:div.content.m-10]])
+
+
 (defn page [ctx & body]
   (base
    ctx
@@ -92,7 +108,9 @@
                     {:x-csrf-token csrf/*anti-forgery-token*})})
     body]
    [:.flex-grow]
-   [:.flex-grow]))
+   [:.flex-grow]
+   (screen-overlay-popup)
+   ))
 
 
 (defn on-error [{:keys [status ex] :as ctx}]
@@ -405,7 +423,7 @@
                   "border-slate-900" "dark:border-slate-100"
                   "h-[66px]" "w-[66px]"  "overflow-hidden"
                   "hover:animate-spin"]}
-    (svg/kulterier-logo :height 60 :class ["m-auto"  "pl-1"] :alt "Logo Kulteriera")]
+    (svg/kulterier-logo :height 60 :class ["m-auto"  "pl-1"] :alt "")]
    [:p {:class ["text-center" "m-auto" "ml-1" "my-2" "py-3" "px-3" "align-middle"
                 "border-t"  "border-b" "border-slate-900" "dark:border-slate-100"
                 "border-dotted" "inline-block"]}
@@ -413,4 +431,6 @@
     [:a.link.ml-1.whitespace-nowrap {:href "https://wator.it"
                                      :target "_blank"}
      "Konrad Wątor"]
-    "."]])
+    "."]
+   [:input {:type "button" :onclick "showOverlayPopup('/changelog')"
+            :value "Changelog" :hx-target "#overlay-popup > .content" :hx-get "/changelog"}]])

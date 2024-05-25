@@ -41,3 +41,21 @@ function hideFilterPopup()
     popup.classList.replace('top-0', '-top-[100vh]')
     popup.classList.add('invisible')
 }
+
+function showOverlayPopup()
+{
+    let popup = document.querySelector('#overlay-popup')
+    popup.classList.remove('invisible')
+    popup.classList.replace('-left-[100vw]', 'left-0')
+    popup.querySelector("#overlay-popup--close").focus()
+    document.body.classList.add("overflow-hidden")
+}
+
+
+function hideOverlayPopup()
+{
+    let popup = document.querySelector('#overlay-popup')
+    popup.classList.replace('left-0', '-left-[100vw]')
+    popup.classList.add('invisible')
+    document.body.classList.remove("overflow-hidden")
+}
