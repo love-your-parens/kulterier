@@ -1,5 +1,5 @@
 (ns kulterier.scraper (:require [bottom-of-the-barrel.core :as source]
-                                [clojure.core.match :as m :refer [match] ]))
+                                [clojure.core.match :as m :refer [match]]))
 
 (def cache-expiry (* 60 60 24))
 
@@ -31,13 +31,12 @@
         date-time? (fn [x] (or (instance? java.time.LocalDateTime x)
                                (instance? java.time.ZonedDateTime x)))
         [a b] date]
-     (match [a b]
-        [nil nil] :permanent
-        [(_ :guard local-date?) nil] :permanent
-        [(_ :guard local-date?) (_ :guard local-date?)] :temporary
-        [(_ :guard date-time?) _] :timetable
-        :else :permanent)
-     ))
+    (match [a b]
+      [nil nil] :permanent
+      [(_ :guard local-date?) nil] :permanent
+      [(_ :guard local-date?) (_ :guard local-date?)] :temporary
+      [(_ :guard date-time?) _] :timetable
+      :else :permanent)))
 
 (comment
   (let [dates [[(java.time.LocalDate/now) nil]
@@ -47,13 +46,12 @@
                [(java.time.ZonedDateTime/of (java.time.LocalDateTime/now) (java.time.ZoneId/of "Europe/Warsaw"))]
                (repeat 5 (java.time.ZonedDateTime/of (java.time.LocalDateTime/now) (java.time.ZoneId/of "Europe/Warsaw")))
                [1 2 3 4 5 6 7]]]
-    (map match-date-type dates))
-)
+    (map match-date-type dates)))
 
 (defn append-date-type
   [event]
   (assoc event :date-type
-           (match-date-type (:date event))))
+         (match-date-type (:date event))))
 
 (defn group-by-date-type
   [events]
@@ -82,15 +80,14 @@
          (expand-timetable-events (:timetable event-groups))))
 
 (defn get-events
-    "Retrieves all events from remote sources (using cache),
+  "Retrieves all events from remote sources (using cache),
       and tranforms them by applying all local middleware."
-    []
-    (->> (fetch)
-         group-by-date-type
-         expand-grouped-events
-         (map (fn [[k vs]] [k (index vs)])) ;indexation
-         (into {})))
+  []
+  (->> (fetch)
+       group-by-date-type
+       expand-grouped-events
+       (map (fn [[k vs]] [k (index vs)])) ;indexation
+       (into {})))
 
 (comment
-  (get-events)
-  )
+  (get-events))
