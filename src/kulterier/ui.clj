@@ -127,10 +127,11 @@
 
 (defn text-link
   ([url] (text-link url url))
-  ([text url]
-   [:a.hover:underline {:href url
-                        :title text}
-    text]))
+  ([text-node url & {:as params}]
+   [:a.hover:underline
+    (merge params {:href url
+                   :title (when (string? text-node) text-node)})
+    (or text-node url)]))
 
 
 (defn filter-popup
