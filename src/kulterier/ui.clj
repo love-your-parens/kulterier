@@ -419,19 +419,44 @@
 
 
 (defn footer []
-  [:footer.text-xs.m-auto.mt-20.text-center
+  [:footer.text-xs.m-auto.mt-20.text-center.font-light
    [:div {:class ["inline-block" "align-middle" "border" "rounded-full"
                   "border-slate-900" "dark:border-slate-100"
                   "h-[66px]" "w-[66px]"  "overflow-hidden"
                   "hover:animate-spin"]}
     (svg/kulterier-logo :height 60 :class ["m-auto"  "pl-1"] :alt "")]
-   [:p {:class ["text-center" "m-auto" "ml-1" "my-2" "py-3" "px-3" "align-middle"
-                "border-t"  "border-b" "border-slate-900" "dark:border-slate-100"
-                "border-dotted" "inline-block"]}
-    "Treserem i opiekunem Kulteriera jest"
-    [:a.link.ml-1.whitespace-nowrap {:href "https://wator.it"
-                                     :target "_blank"}
-     "Konrad Wątor"]
-    "."]
-   [:input {:type "button" :onclick "showOverlayPopup('/changelog')"
-            :value "Changelog" :hx-target "#overlay-popup > .content" :hx-get "/changelog"}]])
+   [:div {:class ["text-center" "m-auto" "ml-1" "my-2" "py-1" "px-1" "align-middle"
+                  "border-t"  "border-b" "border-slate-900" "dark:border-slate-100"
+                  "border-dotted" "inline-block"]}
+    [:p
+     {:class ["my-0.5"]}
+     "Treserem i opiekunem Kulteriera jest "
+     (text-link "Konrad Wątor" "https://wator.it"
+                :target "_blank"
+                :class ["whitespace-nowrap" "text-slate-600" "dark:text-slate-300"])
+     "."]
+    [:hr {:class ["m-auto" "mt-2" "mb-1" "align-middle" "w-3" "border-t" "border-dotted"
+                  "border-slate-900" "dark:border-slate-100"]}]
+    [:p {:class ["my-0"]}
+     [:label.cursor-pointer.mx-2 {:alt "Lista zmian"}
+      [:span.mr-1 "🗊"]
+      [:input
+       {:type "button" :onclick "showOverlayPopup('/changelog')"
+        :class ["cursor-pointer" "hover:underline"]
+        :value "Zmiany" :hx-target "#overlay-popup > .content" :hx-get "/changelog"}]]
+     [:a.mx-2
+      (text-link [:<> [:span.align-middle.mr-1
+                       {:aria-hidden "true"}
+                       [:img
+                        {:class "inline dark:hidden h-3 w-auto align-baseline",
+                         :height "18",
+                         :src "/img/third-party/github-mark.svg",
+                         :width "18"}]
+                       [:img
+                        {:class "hidden dark:inline h-3 w-auto align-baseline",
+                         :height "18",
+                         :src "/img/third-party/github-mark-white.svg",
+                         :width "18"}]]
+                  "Źródło"]
+                 "https://github.com/love-your-parens/kulterier"
+                 :target "_blank")]]]])
