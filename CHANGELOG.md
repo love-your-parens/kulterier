@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.1] - 2024-05-26
+
+### Added
+
+- Full screen overlay window /w dynamic content
+
+### Changed
+
+- GUI Accessibility improvements 
+- Footer links:
+  - changelog
+  - main repository
+- Misc. back-end improvements
+
 ## [0.7.0] - 2024-05-17
 
 ### Added
