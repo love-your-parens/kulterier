@@ -27,23 +27,35 @@ document.addEventListener(
     }
 )
 
-function showFilterPopup()
-{
+function showFilterPopup() {
     let popup = document.querySelector('#filter-popup')
-    popup.classList.remove('invisible')
-    popup.classList.replace('-top-[100vh]', 'top-0')
-    popup.querySelector("#filter-popup--close").focus()
+    if (popup) {
+        popup.addEventListener(
+            "transitionend",
+            () => popup.querySelector("#filter-popup--close").focus(),
+            { once: true }
+        )
+        popup.classList.remove('invisible')
+        popup.classList.replace('-top-[100vh]', 'top-0')
+        popup.addEventListener("keyup", hideFilterPopupOnEsc)
+    }
 }
 
-function hideFilterPopup()
-{
+function hideFilterPopup() {
     let popup = document.querySelector('#filter-popup')
-    popup.classList.replace('top-0', '-top-[100vh]')
-    popup.classList.add('invisible')
+    if (popup) {
+        popup.classList.replace('top-0', '-top-[100vh]')
+        popup.classList.add('invisible')
+    }
 }
 
-function showOverlayPopup()
-{
+// Declared to yield a global reference.
+// We can leverage this to add event listeners idempotently.
+const hideFilterPopupOnEsc = function (e) {
+    if (e.keyCode === 27) hideFilterPopup()
+}
+
+function showOverlayPopup() {
     let popup = document.querySelector('#overlay-popup')
     popup.classList.remove('invisible')
     popup.classList.replace('-left-[100vw]', 'left-0')
@@ -52,8 +64,7 @@ function showOverlayPopup()
 }
 
 
-function hideOverlayPopup()
-{
+function hideOverlayPopup() {
     let popup = document.querySelector('#overlay-popup')
     popup.classList.replace('left-0', '-left-[100vw]')
     popup.classList.add('invisible')
