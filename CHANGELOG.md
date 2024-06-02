@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8] - 2024-06-02
+
+### Added
+
+- New souce: Teatr Słowackiego w Krakowie
+
+### Changed
+
+- Misc. UI tweaks
+
 ## [0.7.1] - 2024-05-26
 
 ### Added
