@@ -247,3 +247,16 @@
        :transform "matrix(.1963466 .98053455 -.99313452 .11697785 0 0)",
        :class ["stroke-slate-950" "dark:stroke-slate-100"]}
       nil]]]))
+
+
+(defn changelog-icon
+  [& {:keys [height width color class alt]}]
+  [:svg {:height (or height width 0)
+         :width (or width height 0)
+         :class class
+         :alt alt
+         :fill (or color "#000000")
+         :viewbox "0 0 48 48"
+         :xmlns "http://www.w3.org/2000/svg"}
+   [:defs [:style ".b{fill:none;stroke-linecap:round;stroke-linejoin:round;}"]]
+   [:g [:path {:class "b", :d "m40.5,5.5H7.5c-1.1046,0-2,.8954-2,2v33c0,1.1046.8954,2,2,2h33c1.1046,0,2-.8954,2-2V7.5c0-1.1046-.8954-2-2-2Zm-11.5,30H11m26,6.9544v-4.7409h-2.2342c-1.1168,0-2.0158-.8991-2.0158-2.0158v-.5376c0-1.1168.8991-2.0158,2.0158-2.0158h2.2342v-6.6807h-2.4842c-1.1168,0-2.0158-.8991-2.0158-2.0158v-.5376c0-1.1168.8991-2.0158,2.0158-2.0158h2.4842v-6.9307h-2.4842c-1.1168,0-2.0158-.8991-2.0158-2.0158v-.5376c0-1.1168.8991-2.0158,2.0158-2.0158h2.4842v-4.8532m-8,18.9586H11m13-11h-13"}]]])

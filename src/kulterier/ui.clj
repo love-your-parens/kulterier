@@ -439,7 +439,9 @@
                   "border-slate-900" "dark:border-slate-100"]}]
     [:p {:class ["my-0"]}
      [:label.cursor-pointer.mx-2 {:alt "Lista zmian"}
-      [:span.mr-1 "🗊"]
+      (svg/changelog-icon :height 15
+                          :class ["stroke-[3px]" "stroke-slate-900" "dark:stroke-white"
+                                  "inline-block" "mr-1" "align-text-bottom"])
       [:input
        {:type "button" :onclick "showOverlayPopup('/changelog')"
         :class ["cursor-pointer" "hover:underline"]
