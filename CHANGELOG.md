@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10] - 2024-06-10
+
+### Added
+
+- New souce: Teatr Stu w Krakowie
+
+### Changed
+
+- Performance improvements
+- Descriptions truncated in timetable view
+
 ## [0.9] - 2024-06-09
 
 ### Added
