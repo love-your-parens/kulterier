@@ -5,7 +5,7 @@
         ring/ring-defaults {:mvn/version "0.3.4"}
         org.clojure/clojure {:mvn/version "1.11.1"}
         org.clojure/core.match {:mvn/version "1.1.0"}
-        io.github.love-your-parens/bottom-of-the-barrel #:git{:sha "965c658" :tag "v0.4.2"}
+        io.github.love-your-parens/bottom-of-the-barrel #:git{:sha "5351fa4" :tag "v0.5"}
         ;; io.github.love-your-parens/bottom-of-the-barrel {:local/root "../bottom-of-the-barrel"}
         markdown-clj/markdown-clj {:mvn/version "1.12.1"}
 

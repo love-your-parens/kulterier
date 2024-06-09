@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9] - 2024-06-09
+
+### Added
+
+- New souce: Teatr Bagatela w Krakowie
+
 ## [0.8] - 2024-06-02
 
 ### Added
