@@ -9,7 +9,8 @@
             [rum.core :as rum]
             [kulterier.svg :as svg]
             [kulterier.filtering :as fltr]
-            [kulterier.util :as util]))
+            [kulterier.util :as util]
+            [clojure.string :as s]))
 
 
 (defn css-path []
@@ -244,6 +245,17 @@
           description]])])])
 
 
+(defn truncate-text
+  "Attempts to truncate the provided text to a maximum length of `length`.
+  Avoids slicing words if possible.
+  Sufficiently short texts are left as-is."
+  [text length]
+  (if (> (count text) length)
+    (let [limit (max 0 (s/last-index-of text " " (- length 3)))]
+      (str (subs text 0 limit) "..."))
+    text))
+
+
 (defn timetable-events-table
   [events]
   (let [colspan (-> events first second count)
@@ -275,7 +287,10 @@
                                :data-event-id i}]
                          summary-row)
                    (title-row colspan (:name d) (:url d) (:thumbnail d))
-                   (description-row colspan (:description d) i)]))))]
+                   ;; Keep descriptions shorter in this particular table.
+                   (description-row colspan
+                                    (truncate-text (:description d) 400)
+                                    i)]))))]
      [:tfoot]]))
 
 
