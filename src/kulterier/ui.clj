@@ -10,7 +10,9 @@
             [kulterier.svg :as svg]
             [kulterier.filtering :as fltr]
             [kulterier.util :as util]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [hickory.core :as hkc]
+            [hickory.select :as hks]))
 
 
 (defn css-path []
@@ -29,6 +31,56 @@
                                   (.getTime))]
     (str "/js/main.js?t=" last-modified)
     "/js/main.js"))
+
+
+(defn hiccup->jsoup
+  "Converts a Hiccup node into a Jsoup object.
+  This is handy because Jsoup objects can be used by tools like Enlive or Hickory
+  in a manner similar to browser DOM, allowing for easy selection and traversal.
+  NOTE Inherently expensive as it involves string conversion!"
+  [hiccup]
+  (first (hkc/parse-fragment (rum/render-static-markup hiccup))))
+
+
+(def hiccup->hickory
+  "Converts Hiccup to Hickory. Expensive!
+  See also: `hiccup->jsoup`"
+  (comp hkc/as-hickory hiccup->jsoup))
+
+(comment (hiccup->hickory [:div.myclass.abc]))
+
+
+(defn tainted
+  "Checks whether a hiccup node - usually an input element - has been _tainted_,
+  meaning it deviates from its original state, e.g.: a checkbox toggled by the user.
+  Any node containing tainted nodes is also tainted."
+  [node]
+  (when (seq node)
+    (first (hks/select (hks/class "tainted")
+                       (hkc/as-hickory (hiccup->jsoup node))))))
+
+(comment
+  (tainted [:div
+            [:span.innocent]
+            [:span.not-me]
+            [:span.oh-no {:class "tainted"}]]))
+
+
+(defn taint
+  "Tags a hiccup node as tainted (see: `tainted`).
+  NOTE Not idempotent. May produce redundancy."
+  [node]
+  (when (seq node)
+    (let [[tag & content] node
+          tag-name (name tag)]
+      (into [(keyword (str tag-name ".tainted"))]
+            content))))
+
+(comment
+  (taint [:div "what's all this then?"]) ;=> [:div.tainted "what's all this then?"]
+  (taint [:div.tainted "This will be redundant"]) ;=> [:div.tainted.tainted "This will be redundant"]
+  (taint [:div {:class "tainted"} "Also redundant"]) ;=> [:div.tainted {:class "tainted"} "Also redundant"]
+  )
 
 
 (defn base [{:keys [::recaptcha biff/base-url] :as ctx} & body]
@@ -83,17 +135,17 @@
 
 (defn screen-overlay-popup []
   [:div {:id "overlay-popup"
-               :class ["fixed" "h-full" "w-full" "bg-neutral-900" "text-gray-200" "opacity-95"
-                       "overflow-scroll"
-                       "transition-all" "z-100" "-left-[100vw]" "invisible"]}
-         [:input {:type "button"
-                  :id "overlay-popup--close"
-                  :class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "m-6"
-                          "cursor-pointer" "transition-transform" "hover:scale-110"
-                          "float-right" "font-black" "bg-white" "rounded-full" "text-black"]
-                  :onclick "hideOverlayPopup()"
-                  :title "Zamknij"
-                  :value "X"}]
+         :class ["fixed" "h-full" "w-full" "bg-neutral-900" "text-gray-200" "opacity-95"
+                 "overflow-scroll"
+                 "transition-all" "z-100" "-left-[100vw]" "invisible"]}
+   [:input {:type "button"
+            :id "overlay-popup--close"
+            :class ["w-8" "h-8" "text-lg" "flex" "justify-center" "items-center" "m-6"
+                    "cursor-pointer" "transition-transform" "hover:scale-110"
+                    "float-right" "font-black" "bg-white" "rounded-full" "text-black"]
+            :onclick "hideOverlayPopup()"
+            :title "Zamknij"
+            :value "X"}]
    [:div.content.m-10]])
 
 
@@ -110,8 +162,7 @@
     body]
    [:.flex-grow]
    [:.flex-grow]
-   (screen-overlay-popup)
-   ))
+   (screen-overlay-popup)))
 
 
 (defn on-error [{:keys [status ex] :as ctx}]
@@ -142,7 +193,7 @@
                   "invisible"
                   "fixed" "z-10" "-top-[100vh]" "left-0" "max-h-full" "w-full"
                   "overflow-scroll" "p-10" "bg-slate-950" "text-neutral-100"
-                  "text-sm" "md:text-md"
+                  "text-sm" "md:text-base"
                   "transition-all"]}
          [:input {:type "button"
                   :id "filter-popup--close"
@@ -379,58 +430,121 @@
     (event-tab :timetable "Pojedyncze" (= selected-tab :timetable))]])
 
 
+(defn filter-title
+  [title]
+  [:div.font-bold {:class ["text-lg" "md:text-xl"]} title ":"])
+
+
 (defn checklist-filter
   "Produces a generic multiple-selection form widget, designed in the context of content filtering.
-  `label` is the text prefacing the widget.
+  If no values are provided, then the result will be `nil`.
+  `title` is the text prefacing the widget.
   `property-key` is a keyword corresponding to the appropriate HTTP request parameter.
   `vals-and-labels` represents all recognised input value / input label pairs.
-  `params` are the HTTP request parameters, used to resolve the initial state of the widget."
-  [label property-key vals-and-labels params]
+  `params` are the HTTP request parameters, used to resolve the initial state of the widget.
+  If the initial state is altered, the DOM node will be `tainted`."
+  [title property-key vals-and-labels params]
   (when (> (count vals-and-labels) 1)
     (let [known-keys (set (map first vals-and-labels))
           requested-keys (set (let [ks (get params property-key)]
                                 (when ks (if (coll? ks) ks (vector ks)))))
           selected (sets/intersection known-keys requested-keys)
           select-all (or (empty? selected)
-                         (= selected known-keys))]
-      [:fieldset {:class ["disabled:opacity-50"] :onchange "requestSubmit()"}
-       [:div.font-bold.mr-3 (str label ":")]
-       [:label.all {:onchange "this.parentElement
+                         (= selected known-keys))
+          container (cond-> [:fieldset {:class ["disabled:opacity-50"]
+                                        :onchange "requestSubmit()"}]
+                      (not select-all) taint)]
+      (conj container
+            (filter-title title)
+            [:label.all {:onchange "this.parentElement
                                     .querySelectorAll('.individual > input[type=checkbox]')
                                     .forEach(el => el.checked = null)"
-                    :class ["mx-1" "hover:underline" "cursor-pointer" "block" "whitespace-nowrap"]}
-        [:input {:type "checkbox" :checked select-all :disabled select-all
-                 :class ["rounded-full" "text-slate-700" "focus:ring-slate-600"
-                         "border-gray-900" "bg-gray-300"]}]
-        "Wszystkie"]
-       (next
-        (interleave
-         (repeat [:span.mx-1 "•"])
-         (for [[v l] (sort-by second vals-and-labels)]
-           [:label.individual
-            {:onchange "this.parentElement.querySelector('.all > input[type=checkbox]').checked = null"
-             :class ["hover:underline" "cursor-pointer" "inline-block" "whitespace-nowrap"]}
-            [:input {:type "checkbox" :name property-key :value v
-                     :checked (and (not select-all) (selected v))
-                     :class ["mx-1" "rounded" "text-slate-700" "focus:ring-slate-600"
-                             "border-gray-900" "bg-gray-300"]}]
-            [:span.capitalize l]])))])))
+                         :class ["mx-1" "hover:underline" "cursor-pointer" "block" "whitespace-nowrap"]}
+             [:input.select-all {:type "checkbox" :checked select-all :disabled select-all
+                                 :class ["mr-1" "rounded-full" "text-slate-700" "focus:ring-slate-600"
+                                         "border-gray-900" "bg-gray-300"]}]
+             "Wszystkie"]
+            (next
+             (interleave
+              (repeat [:span.mx-1 "•"])
+              (for [[v l] (sort-by second vals-and-labels)]
+                [:label.individual
+                 {:onchange "this.parentElement.querySelector('.all > input[type=checkbox]').checked = null"
+                  :class ["hover:underline" "cursor-pointer" "inline-block" "whitespace-nowrap"]}
+                 [:input {:type "checkbox" :name property-key :value v
+                          :checked (and (not select-all) (selected v))
+                          :class ["mx-1" "rounded" "text-slate-700" "focus:ring-slate-600"
+                                  "border-gray-900" "bg-gray-300"]}]
+                 [:span.capitalize l]])))))))
+
+
+(defn radio-filter
+  [title property-key values-and-labels-map params]
+  (let [requested (get params property-key)
+        selected (get (->> values-and-labels-map
+                           keys
+                           (filter some?)
+                           set)
+                      requested)
+        container (cond-> [:fieldset {:class ["disabled:opacity-50"]
+                                      :onchange "requestSubmit()"}]
+                    selected taint)
+        radio (fn [value label & {:keys [default?]}]
+                [:label
+                 {:class "m-1 cursor-pointer hover:underline inline-block whitespace-nowrap"}
+                 [:input {:type "radio" :name property-key :value value
+                          :checked (if selected
+                                     (= selected value)
+                                     default?)
+                          :class [(when default? "select-all")
+                                  "text-slate-700" "focus:ring-slate-600"
+                                  "border-gray-900" "bg-gray-300"
+                                  "mr-1" "cursor-pointer"]}]
+                 label])]
+    [:div
+     (into container
+           (concat [(filter-title title)
+                    (radio nil "Dowolny" :default? true)]
+                   (for [[value label] values-and-labels-map]
+                     [:<> [:span.mx-1 "•"]
+                      (radio value (or label value))])))]))
 
 
 (defn event-tab-filters
+  "Produces a GUI element containing filters specific to the active event-tab.
+  This consists of two objects:
+  - a popup element, which contains the actual filters
+  - an activator/toggle element with which to bring up the filter popup
+  Filtering criteria is derived from event data.
+  The state is derived from `params` and comes from HTTP query parameters etc."
   [params selected-tab event-data]
   (let [[ajax-url navigation-url] (event-tab-url selected-tab)
         types (fltr/get-event-types event-data)
         venues (fltr/get-event-venues event-data)]
     [:<>
      (filter-popup
-      [:form.flex.flex-col
-       {:hx-get ajax-url :hx-trigger "submit delay:1000" :hx-indicator ".global-load-indicator"}
-       [:div
-        [:div.my-2 (checklist-filter "Rodzaj wydarzenia" :event-type types params)]
-        [:div.my-2 (checklist-filter "Miejsce wydarzenia" :event-venue venues params)]]])
+      (let [fieldsets [(when (= selected-tab :timetable)
+                         [:div.my-2 (radio-filter "Czas wydarzenia" :event-timespan
+                                                  {"0" "Dziś"
+                                                   "2" "Najbliższe 3 dni"
+                                                   "6" "Tydzień"
+                                                   "13" "Dwa tygodnie"
+                                                   "30" "Miesiąc"}
+                                                  params)])
+                       [:div.my-2 (checklist-filter "Rodzaj wydarzenia" :event-type types params)]
+                       [:div.my-2 (checklist-filter "Miejsce wydarzenia" :event-venue venues params)]]
+            taint (first (keep tainted fieldsets))]
+        (into [:form.flex.flex-col
+               {:hx-get ajax-url :hx-trigger "submit delay:1000" :hx-indicator ".global-load-indicator"}
+               (when taint
+                 [:div {:class ["mb-2"]}
+                  [:label {:class "inline-block border-2 border-neutral-200 rounded
+                                   hover:bg-white hover:text-neutral-900 hover:scale-105
+                                   p-1 pl-2 pr-3 cursor-pointer font-bold transition-transform"}
+                   [:input.mr-2 {:type "button" :onclick "resetFilters(this.form)" :value "⨯"}]
+                   "Wszystkiego!"]])]
+              fieldsets)))
      (filter-popup-toggle "Węsz uważniej...")]))
-
 
 
 (defn footer []

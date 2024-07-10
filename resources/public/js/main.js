@@ -1,4 +1,4 @@
-// When plain htmx isn't quite enough, you can stick some custom JS here.
+// Initial load.
 document.addEventListener(
     "DOMContentLoaded",
     function () {
@@ -69,4 +69,10 @@ function hideOverlayPopup() {
     popup.classList.replace('left-0', '-left-[100vw]')
     popup.classList.add('invisible')
     document.body.classList.remove("overflow-hidden")
+}
+
+
+function resetFilters(form) {
+    form.querySelectorAll('.select-all')
+        .forEach(el => el.click())
 }

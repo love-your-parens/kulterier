@@ -8,6 +8,7 @@
         io.github.love-your-parens/bottom-of-the-barrel #:git{:sha "d4b94d0" :tag "v0.6.1"}
         ;; io.github.love-your-parens/bottom-of-the-barrel {:local/root "../bottom-of-the-barrel"}
         markdown-clj/markdown-clj {:mvn/version "1.12.1"}
+        org.clj-commons/hickory {:mvn/version "0.7.4"}
 
         ;; Notes on logging: https://gist.github.com/jacobobryant/76b7a08a07d5ef2cc076b048d078f1f3
         org.slf4j/slf4j-simple {:mvn/version "2.0.0-alpha5"}

@@ -14,10 +14,10 @@
 
 
 (defn changelog-page
-    [& opts]
-    (ui/page
-     {:base/title (str "Changelog - " settings/app-name)}
-     [:section#changelog @*changelog]))
+  [& opts]
+  (ui/page
+   {:base/title (str "Changelog - " settings/app-name)}
+   [:section#changelog @*changelog]))
 
 
 (def module

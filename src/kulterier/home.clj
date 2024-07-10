@@ -14,10 +14,14 @@
 (defn- filter-events-by-request-params
   [event-data params]
   (let [requested-types (->> (:event-type params) fltr/query-param->vec (map keyword) set)
-        requested-venues (fltr/query-param->set (:event-venue params))]
+        requested-venues (fltr/query-param->set (:event-venue params))
+        requested-timespan (when-let [rt (:event-timespan params)]
+                             (try (Integer/parseInt rt)
+                                  (catch Exception _)))]
     (-> event-data
         (fltr/in-set requested-types #(-> % second :type))
-        (fltr/in-set requested-venues #(-> % second :place)))))
+        (fltr/in-set requested-venues #(-> % second :place))
+        (fltr/in-optional-day-range requested-timespan #(-> % second :date)))))
 
 
 (defn permanent-events [{:keys [params]}]
