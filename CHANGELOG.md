@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11] - 2024-07-10
+
+### Added
+
+- New filtering controls: results can now be restricted to a timespan
+- Filters can now all be reset wholesale
+- Misc. other improvements
+
 ## [0.10] - 2024-06-10
 
 ### Added
