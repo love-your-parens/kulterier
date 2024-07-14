@@ -309,40 +309,46 @@
 
 (defn timetable-events-table
   [events]
-  (let [colspan (-> events first second count)
-        grouped (group-by (fn [[_ event]]
-                            (.format (:date event)
-                                     (java.time.format.DateTimeFormatter/ofPattern "Y/MM/dd")))
+  (let [grouped (group-by (fn [[_ event]]
+                            (.format
+                             (:date event)
+                             (java.time.format.DateTimeFormatter/ofPattern "Y/MM/dd")))
                           events)
         groups-asc (sort (keys grouped))]
-    [:table {:class ["m-auto" "-mt-2" "max-w-[95%]" "md:max-w-[1024px]"]}
-     [:tbody
-      (for [g groups-asc :let [events (sort-by (comp :date second)
-                                               (get grouped g []))]]
-        (into [:<>
-               [:tr [:td {:class ["text-xl" "font-light" "text-left" "pt-1"]
-                          :colspan colspan}
-                     [:p {:class ["border-b border-dashed border-neutral-400 py-2"]}
-                      (format "» %s" g)]]]]
-              (for [[i d] events]
-                (let [summary-row [(title-cell (:name d) (:url d) (:thumbnail d))
-                                   [:td.text-left.md:p-2 (:place d)]
-                                   [:td.md:text-center.md:p-2.font-semibold
-                                    (when-let [d ^java.time.ZonedDateTime (:date d)]
-                                      (.format d (java.time.format.DateTimeFormatter/ofPattern
-                                                  "Y/MM/dd HH:mm")))]
-                                   [:td.text-right.md:p-2 (event-type-tag (:type d))]]
-                      colspan (count summary-row)]
-                  [:<>
-                   (into [:tr {:class "event-breakdown"
-                               :data-event-id i}]
-                         summary-row)
-                   (title-row colspan (:name d) (:url d) (:thumbnail d))
-                   ;; Keep descriptions shorter in this particular table.
-                   (description-row colspan
-                                    (truncate-text (:description d) 400)
-                                    i)]))))]
-     [:tfoot]]))
+    (for [g groups-asc :let [events (sort-by (comp :date second)
+                                             (get grouped g []))]]
+      [:<>
+       ;; Sticky group marker.
+       [:div {:class ["max-w-[95%]" "md:max-w-[1024px]" "m-auto" "mb-2"
+                      "sticky" "top-0" "flex" "transition-colors"]}
+        [:div {:class ["bg-gray-100" "dark:bg-gray-700"]}
+         [:span.font-light.mr-2 "»"]
+         [:span {:class ["font-black" "text-xl" "border-b" "px-1" "pb-0.5"
+                         "border-gray-600" "dark:border-slate-200"]} g]]
+        [:div {:class ["grow" "bg-gradient-to-r" "to-transparent"
+                       "from-gray-100" "dark:from-gray-700"]}]]
+       ;; Actual group content.
+       [:table {:class ["m-auto" "max-w-[95%]" "md:max-w-[1024px]"]}
+        [:tbody
+         (for [[i d] events]
+           (let [summary-row [(title-cell (:name d) (:url d) (:thumbnail d))
+                              [:td.text-left.md:p-2 (:place d)]
+                              [:td.md:text-center.md:p-2.font-semibold
+                               (when-let [d ^java.time.ZonedDateTime (:date d)]
+                                 (.format d (java.time.format.DateTimeFormatter/ofPattern
+                                             "Y/MM/dd HH:mm")))]
+                              [:td.text-right.md:p-2 (event-type-tag (:type d))]]
+                 colspan (count summary-row)]
+             [:<>
+              (into [:tr {:class "event-breakdown"
+                          :data-event-id i}]
+                    summary-row)
+              (title-row colspan (:name d) (:url d) (:thumbnail d))
+              ;; Keep descriptions shorter in this particular table.
+              (description-row colspan
+                               (truncate-text (:description d) 400)
+                               i)]))]
+        [:tfoot]]])))
 
 
 (defn permanent-events-table

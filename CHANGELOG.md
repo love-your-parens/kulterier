@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.1] - 2024-07-14
+
+## Changed
+
+- Timetable view restructured:
+  - Group names (i.e. dates) now sticky
+  - Every group now in a separate table
+
 ## [0.11] - 2024-07-10
 
 ### Added
@@ -43,7 +51,7 @@
 
 ### Changed
 
-- GUI Accessibility improvements 
+- GUI Accessibility improvements
 - Footer links:
   - changelog
   - main repository
@@ -57,7 +65,7 @@
 
 ## [0.6.1] - 2024-05-15
 
-### Changed 
+### Changed
 
 - Improved responsive behaviour
 
@@ -97,7 +105,7 @@
 
 ### Added
 
-- Proper readme 
+- Proper readme
 - Global AJAX activity indicator
 - Site emblem
 
@@ -123,7 +131,7 @@
 - Loading screen
 - Footer
 
-### Changed 
+### Changed
 
 - Revised fonts and formatting
 - Various little aesthetic tweaks
@@ -138,4 +146,3 @@
   - Muzeum Krakowa
   - Manggha
 - Minimal UI, only preliminary branding
-
