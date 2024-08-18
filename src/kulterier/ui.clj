@@ -367,7 +367,7 @@
                      :data-event-id i}]
                summary-row)
          (title-row colspan (:name d) (:url d) (:thumbnail d))
-         (description-row colspan (:description d) i)]))]
+         (description-row colspan (truncate-text (:description d) 400) i)]))]
    [:tfoot]])
 
 
@@ -390,7 +390,7 @@
                        :data-event-id i}]
                  summary-row)
            (title-row colspan (:name d) (:url d) (:thumbnail d))
-           (description-row colspan (:description d) i)]))]
+           (description-row colspan (truncate-text (:description d) 400) i)]))]
      [:tfoot]]))
 
 
