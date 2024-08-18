@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12] - 2024-08-18
+
+### Added
+
+- New source: Zamek Królewski na Wawelu
+
 ## [0.11.1] - 2024-07-14
 
 ## Changed
