@@ -319,7 +319,7 @@
                                              (get grouped g []))]]
       [:<>
        ;; Sticky group marker.
-       [:div {:class ["max-w-[95%]" "md:max-w-[1024px]" "m-auto" "mb-2"
+       [:div {:class ["max-w-[95%]" "md:w-[1024px]" "m-auto" "mb-2"
                       "sticky" "top-0" "flex" "transition-colors"]}
         [:div {:class ["bg-gray-100" "dark:bg-gray-700"]}
          [:span.font-light.mr-2 "»"]
@@ -328,7 +328,7 @@
         [:div {:class ["grow" "bg-gradient-to-r" "to-transparent"
                        "from-gray-100" "dark:from-gray-700"]}]]
        ;; Actual group content.
-       [:table {:class ["m-auto" "max-w-[95%]" "md:max-w-[1024px]"]}
+       [:table {:class ["m-auto" "max-w-[95%]" "md:w-[1024px]"]}
         [:tbody
          (for [[i d] events]
            (let [summary-row [(title-cell (:name d) (:url d) (:thumbnail d))
