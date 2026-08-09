@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.12.2] - 2026-08-09
+
+### Fixed
+
+- Broken source: MNK
+
 ## [0.12] - 2024-08-18
 
 ### Added
